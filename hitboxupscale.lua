@@ -1,7 +1,7 @@
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "Hitbox upscale",
     Text = "Script succesfully loaded.",
-    Icon = "rbxassetid://0",
+    Icon = "rbxassetid://109016347150080",
     Duration = 5
 })
 
