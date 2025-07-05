@@ -1,4 +1,3 @@
--- Настройки
 local ESP_SETTINGS = {
     BoxColor = Color3.fromRGB(255, 255, 255),
     HPColor = Color3.fromRGB(0, 255, 0),
@@ -13,16 +12,13 @@ local ESP_SETTINGS = {
     MaxDistance = 1000                         
 }
 
--- S
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
--- C
 local ESP_Cache = {}
 
--- L
 local BONE_CONNECTIONS = {
     {"Head", "UpperTorso"},
     {"UpperTorso", "LowerTorso"},
@@ -61,28 +57,27 @@ local function CreateESP(player)
         Skeleton = {}
     }
     
-    -- Настройка гигантского бокса
     for _, line in pairs(drawings.Box) do
         line.Color = ESP_SETTINGS.BoxColor
         line.Thickness = ESP_SETTINGS.BoxThickness -- Толстые линии
         line.Visible = false
     end
 
-    -- Настройка HP-бара
+    
     drawings.HealthBar.Outline.Color = Color3.new(0, 0, 0)
     drawings.HealthBar.Outline.Thickness = ESP_SETTINGS.BoxThickness + 2
     drawings.HealthBar.Fill.Color = ESP_SETTINGS.HPColor
     drawings.HealthBar.Fill.Thickness = ESP_SETTINGS.BoxThickness + 1
 
-    -- Настройка текста
-    drawings.Text.Name.Size = 18 -- Увеличенный текст
+    
+    drawings.Text.Name.Size = 18 
     drawings.Text.Name.Outline = true
     drawings.Text.Name.Center = true
     drawings.Text.Distance.Size = 16
     drawings.Text.Distance.Outline = true
     drawings.Text.Distance.Center = true
 
-    -- Создание линий скелетона
+    
     for _ = 1, #BONE_CONNECTIONS do
         local boneLine = Drawing.new("Line")
         boneLine.Color = ESP_SETTINGS.SkeletonColor
@@ -105,15 +100,15 @@ local function UpdateESP()
                 local dist = (Camera.CFrame.Position - rootPart.Position).Magnitude
                 
                 if rootVis and dist <= ESP_SETTINGS.MaxDistance then
-                    -- Размеры гигантского бокса (25x)
-                    local height = 6 * ESP_SETTINGS.BoxScale  -- ~150 studs
-                    local width = 3 * ESP_SETTINGS.BoxScale   -- ~75 studs
                     
-                    -- Центрирование по rootPart
+                    local height = 6 * ESP_SETTINGS.BoxScale 
+                    local width = 3 * ESP_SETTINGS.BoxScale  
+                    
+                    
                     local topLeft = Vector2.new(rootPos.X - width/2, rootPos.Y - height/2)
                     local bottomRight = Vector2.new(rootPos.X + width/2, rootPos.Y + height/2)
                     
-                    -- Отрисовка мега-бокса
+                    
                     drawings.Box.Top.From = topLeft
                     drawings.Box.Top.To = Vector2.new(bottomRight.X, topLeft.Y)
                     drawings.Box.Bottom.From = Vector2.new(topLeft.X, bottomRight.Y)
@@ -123,7 +118,7 @@ local function UpdateESP()
                     drawings.Box.Right.From = Vector2.new(bottomRight.X, topLeft.Y)
                     drawings.Box.Right.To = bottomRight
                     
-                    -- HP-бар (масштабированный)
+                    
                     if ESP_SETTINGS.ShowHealth then
                         local healthY = bottomRight.Y - (height * (humanoid.Health/humanoid.MaxHealth))
                         drawings.HealthBar.Outline.From = Vector2.new(topLeft.X - 10, topLeft.Y)
@@ -132,7 +127,7 @@ local function UpdateESP()
                         drawings.HealthBar.Fill.To = Vector2.new(topLeft.X - 10, bottomRight.Y)
                     end
                     
-                    -- Скелетон (остается нормального размера)
+                    
                     if ESP_SETTINGS.ShowSkeleton then
                         for i, bones in ipairs(BONE_CONNECTIONS) do
                             local part0 = player.Character:FindFirstChild(bones[1])
@@ -151,7 +146,7 @@ local function UpdateESP()
                         end
                     end
                     
-                    -- Текст (масштабированный)
+                    
                     if ESP_SETTINGS.ShowNames then
                         drawings.Text.Name.Position = Vector2.new(rootPos.X, topLeft.Y - 25)
                         drawings.Text.Name.Text = player.Name
@@ -162,7 +157,7 @@ local function UpdateESP()
                         drawings.Text.Distance.Text = math.floor(dist) .. "m"
                     end
                     
-                    -- Включение видимости
+                    
                     for _, element in pairs(drawings.Box) do element.Visible = true end
                     if drawings.HealthBar then
                         drawings.HealthBar.Outline.Visible = true
@@ -176,7 +171,7 @@ local function UpdateESP()
                         drawings.Text.Distance.Visible = true
                     end
                 else
-                    -- Выключение при выходе за пределы
+                    
                     for _, element in pairs(drawings.Box) do element.Visible = false end
                     if drawings.HealthBar then
                         drawings.HealthBar.Outline.Visible = false
@@ -195,7 +190,7 @@ local function UpdateESP()
     end
 end
 
--- i
+
 for _, player in ipairs(Players:GetPlayers()) do
     if player ~= LocalPlayer then
         CreateESP(player)
@@ -226,5 +221,5 @@ Players.PlayerRemoving:Connect(function(player)
     end
 end)
 
--- Основной цикл
+
 RunService.RenderStepped:Connect(UpdateESP)
